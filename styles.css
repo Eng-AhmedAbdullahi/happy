@@ -200,69 +200,6 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   50% { opacity: 1; }
 }
 
-.screen--birthday {
-  justify-content: flex-start;
-  padding-top: 10vh;
-  gap: 1rem;
-}
-
-.song-slides {
-  position: relative;
-  width: min(100%, 20rem);
-  margin: 0.35rem auto 0;
-  z-index: 2;
-}
-
-.song-slides__stage {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 1.15rem;
-  overflow: hidden;
-  background: #2a1a20;
-  box-shadow:
-    0 0 0 1px var(--line),
-    0 22px 48px rgba(0, 0, 0, 0.45);
-}
-
-.song-slides__stage img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transform: scale(1.06);
-  transition: opacity 1.4s var(--ease), transform linear;
-  transition-duration: 1.4s, var(--zoom-ms, 12s);
-  filter: saturate(0.95);
-}
-
-.song-slides__stage img.is-active {
-  opacity: 1;
-  transform: scale(1.16);
-  z-index: 1;
-}
-
-.song-slides__stage::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 52%, rgba(26, 18, 22, 0.72) 100%);
-}
-
-.song-slides__cap {
-  margin-top: 0.8rem;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.05rem;
-  color: var(--blush);
-  min-height: 1.4em;
-  transition: opacity 0.6s ease;
-}
-
 .big-love {
   font-family: var(--serif);
   font-size: clamp(2.3rem, 10vw, 3.6rem);
@@ -475,12 +412,12 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   color: var(--mute);
 }
 
-/* Photos — tender, emotional frames */
+/* Photos — polaroid style (3 side by side) */
 .block {
   position: relative;
   z-index: 2;
   padding: 3rem 1.25rem calc(2.5rem + var(--safe));
-  max-width: 34rem;
+  max-width: 42rem;
   margin: 0 auto;
   text-align: center;
 }
@@ -488,65 +425,99 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   font-family: var(--serif);
   font-size: clamp(1.7rem, 6vw, 2.3rem);
   font-weight: 400;
-  margin: 0.4rem 0 1.8rem;
+  margin: 0.4rem 0 0.45rem;
+}
+.block-sub {
+  color: var(--mute);
+  font-size: 0.92rem;
+  margin-bottom: 1.75rem;
 }
 
-.tender-gallery {
+.polaroid-gallery {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.1rem 1.25rem;
 }
 
-.tender {
+.polaroid {
   position: relative;
+  width: min(42vw, 150px);
+  padding: 0.55rem 0.55rem 1.7rem;
   border: 0;
-  padding: 0;
-  background: none;
-  text-align: left;
+  border-radius: 3px;
   cursor: pointer;
-  opacity: 0;
-  transform: translateY(24px);
-  animation: tenderIn 2.4s var(--ease) forwards;
-  animation-delay: var(--delay, 0s);
-}
-@keyframes tenderIn { to { opacity: 1; transform: none; } }
-
-.tender__shot {
-  position: relative;
-  border-radius: 1.1rem;
-  overflow: hidden;
+  background: linear-gradient(180deg, #fffaf8, #f7ebe8);
   box-shadow:
-    0 0 0 1px var(--line),
-    0 18px 40px rgba(0, 0, 0, 0.4);
+    0 10px 28px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.15);
+  transform: rotate(var(--rot, -3deg)) translateY(18px);
+  opacity: 0;
+  animation: polaroidIn 1.4s var(--ease) forwards;
+  animation-delay: var(--delay, 0s);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s;
 }
-.tender__shot img {
+
+.polaroid:nth-child(1) { --rot: -4deg; }
+.polaroid:nth-child(2) { --rot: 2.5deg; }
+.polaroid:nth-child(3) { --rot: -2deg; }
+
+.polaroid:hover,
+.polaroid:focus-visible {
+  transform: rotate(0deg) scale(1.06) translateY(-4px);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.45),
+    0 0 28px rgba(201, 123, 138, 0.35);
+  z-index: 2;
+  outline: none;
+}
+
+.polaroid__img {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   object-fit: cover;
-  transition: transform 1s var(--ease), filter 1s;
-  filter: saturate(0.92) contrast(1.02);
+  border-radius: 2px;
+  background: #2a1a20;
+  display: block;
 }
-.tender:hover .tender__shot img,
-.tender:focus-visible .tender__shot img {
-  transform: scale(1.04);
-  filter: saturate(1.05);
-}
-.tender__shot::after {
-  content: "";
+
+.polaroid__caption {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(26, 18, 22, 0.75) 100%);
-  pointer-events: none;
-}
-.tender__cap {
-  position: absolute;
-  left: 1rem; right: 1rem; bottom: 1rem;
-  z-index: 1;
+  left: 0.3rem;
+  right: 0.3rem;
+  bottom: 0.35rem;
   font-family: var(--serif);
   font-style: italic;
-  font-size: 1.2rem;
-  color: var(--cream);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  font-size: 0.68rem;
+  line-height: 1.25;
+  color: #5c3040;
+  text-align: center;
+}
+
+.polaroid__heart {
+  position: absolute;
+  top: -7px;
+  right: -5px;
+  font-size: 0.95rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  z-index: 2;
+}
+
+@keyframes polaroidIn {
+  to {
+    opacity: 1;
+    transform: rotate(var(--rot, -3deg)) translateY(0);
+  }
+}
+
+@media (min-width: 640px) {
+  .polaroid {
+    width: 168px;
+  }
+  .polaroid__caption {
+    font-size: 0.75rem;
+  }
 }
 
 /* Memories — stacked emotional cards */

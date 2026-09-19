@@ -91,10 +91,9 @@
     raf = pieces.length ? requestAnimationFrame(tick) : null;
   }
 
-  /* Music + photos finish together */
+  /* Music from your video — plays once */
   const Music = (() => {
     const el = () => $("#bg-music");
-    let endedCb = null;
 
     function sync() {
       const btn = $("#music-toggle");
@@ -108,7 +107,7 @@
 
     function start() {
       const a = el();
-      if (!a) return Promise.resolve();
+      if (!a) return;
       if (cfg.musicSrc) {
         const src = a.querySelector("source");
         if (src) {
@@ -120,16 +119,8 @@
       a.loop = false;
       a.playbackRate = 0.88;
       a.currentTime = 0;
-      a.onended = () => {
-        sync();
-        Slides.stop();
-        if (typeof endedCb === "function") endedCb();
-      };
+      a.onended = () => sync();
       return a.play().then(sync).catch(() => sync());
-    }
-
-    function onEnded(cb) {
-      endedCb = cb;
     }
 
     function toggle() {
@@ -144,95 +135,7 @@
       }
     }
 
-    function durationSec() {
-      const a = el();
-      if (a && a.duration && isFinite(a.duration) && a.duration > 0) {
-        // account for slower playbackRate
-        return a.duration / (a.playbackRate || 1);
-      }
-      return 46; // fallback ~ song length at 0.88
-    }
-
-    return { start, toggle, onEnded, el, durationSec };
-  })();
-
-  /* Soft photo changes timed with the song */
-  const Slides = (() => {
-    let timer = null;
-    let index = 0;
-    let imgs = [];
-
-    function build() {
-      const stage = $("#song-slides-stage");
-      const list = cfg.photos || [];
-      if (!stage || !list.length) return;
-      stage.innerHTML = list
-        .map(
-          (p, i) =>
-            `<img src="${escapeAttr(p.src)}" alt="" data-cap="${escapeAttr(p.caption || "")}" ${i === 0 ? 'class="is-active"' : ""} />`
-        )
-        .join("");
-      imgs = $$("img", stage);
-      const cap = $("#song-slides-cap");
-      if (cap) cap.textContent = list[0]?.caption || "";
-    }
-
-    function show(i) {
-      if (!imgs.length) return;
-      index = ((i % imgs.length) + imgs.length) % imgs.length;
-      imgs.forEach((img, n) => {
-        if (n === index) {
-          img.classList.remove("is-active");
-          void img.offsetWidth;
-          img.classList.add("is-active");
-        } else {
-          img.classList.remove("is-active");
-        }
-      });
-      const cap = $("#song-slides-cap");
-      if (cap) {
-        cap.style.opacity = "0";
-        setTimeout(() => {
-          cap.textContent = imgs[index].dataset.cap || "";
-          cap.style.opacity = "1";
-        }, 300);
-      }
-    }
-
-    function start() {
-      build();
-      const wrap = $("#song-slides");
-      wrap?.classList.add("is-visible");
-      index = 0;
-      show(0);
-
-      const totalMs = Music.durationSec() * 1000;
-      const n = Math.max(imgs.length, 1);
-      // Equal time per photo so last change + hold ends with the song
-      const slotMs = totalMs / n;
-      imgs.forEach((img) => {
-        img.style.setProperty("--zoom-ms", Math.max(slotMs, 4000) + "ms");
-      });
-
-      clearInterval(timer);
-      let step = 0;
-      timer = setInterval(() => {
-        step += 1;
-        if (step >= n) {
-          clearInterval(timer);
-          timer = null;
-          return;
-        }
-        show(step);
-      }, slotMs);
-    }
-
-    function stop() {
-      clearInterval(timer);
-      timer = null;
-    }
-
-    return { start, stop, build };
+    return { start, toggle };
   })();
 
   function createVeil() {
@@ -288,12 +191,11 @@
       gallery.innerHTML = cfg.photos
         .map(
           (p, i) => `
-        <button class="tender" type="button" style="--delay:${i * 2.2}s"
+        <button class="polaroid" type="button" style="--delay:${0.3 + i * 0.45}s"
           data-src="${escapeAttr(p.src)}" data-caption="${escapeAttr(p.caption || "")}">
-          <div class="tender__shot">
-            <img src="${escapeAttr(p.src)}" alt="${escapeAttr(p.caption || "")}" loading="lazy" />
-            <span class="tender__cap">${escapeHtml(p.caption || "")}</span>
-          </div>
+          <span class="polaroid__heart" aria-hidden="true">❤️</span>
+          <img class="polaroid__img" src="${escapeAttr(p.src)}" alt="${escapeAttr(p.caption || "")}" loading="lazy" />
+          <span class="polaroid__caption">${escapeHtml(p.caption || "")}</span>
         </button>`
         )
         .join("");
@@ -332,7 +234,7 @@
       document.body.style.overflow = "";
     };
     document.addEventListener("click", (e) => {
-      const t = e.target.closest(".tender");
+      const t = e.target.closest(".polaroid");
       if (t) open(t.dataset.src, t.dataset.caption);
     });
     $(".lightbox__close")?.addEventListener("click", close);
@@ -352,6 +254,8 @@
       gp.alt = "";
     }
     $("#photos-title").textContent = cfg.photosTitle || "";
+    const photosSub = $("#photos-sub");
+    if (photosSub) photosSub.textContent = cfg.photosSub || "";
     $("#memories-title").textContent = cfg.memoriesTitle || "";
     $("#finale-title").textContent = cfg.finaleTitle || "";
     $("#finale-sub").textContent = cfg.finaleSub || "";
@@ -387,35 +291,11 @@
     await wait(900);
     $$(".reveal", hero).forEach((el) => el.classList.add("is-visible"));
 
-    // Song + photos change together, then both end → continue story
-    let done = false;
-    const bothDone = new Promise((resolve) => {
-      const finish = () => {
-        if (done) return;
-        done = true;
-        Slides.stop();
-        resolve();
-      };
-      Music.onEnded(finish);
-      // Safety fallback matched to song length
-      setTimeout(finish, Music.durationSec() * 1000 + 1200);
-    });
-
-    await Music.start();
-    // Wait until duration is known so photos end with the song
-    const a = Music.el();
-    if (a && !(a.duration && isFinite(a.duration))) {
-      await new Promise((res) => {
-        a.addEventListener("loadedmetadata", res, { once: true });
-        setTimeout(res, 800);
-      });
-    }
-    Slides.start();
+    // Song starts — story continues (sida hore)
+    Music.start();
     burstConfetti(55);
 
-    await bothDone;
-    burstConfetti(35);
-
+    await wait(3600);
     message.scrollIntoView({ behavior: "smooth", block: "center" });
     await wait(700);
     $$(".reveal", message).forEach((el) => el.classList.add("is-visible"));
@@ -452,8 +332,8 @@
         setTimeout(() => {
           photos.scrollIntoView({ behavior: "smooth", block: "start" });
           observeReveals(photos);
-          // Memories wait until the 3 photos have slowly appeared
-          setTimeout(() => observeReveals(memories), 7000);
+          // Memories follow after polaroids appear
+          setTimeout(() => observeReveals(memories), 2200);
         }, 900);
       }, 900);
     });
@@ -481,4 +361,16 @@
     const veil = createVeil();
     // 1) "for you…" stays longer
     setTimeout(() => {
-      veil.classList.add("is-gone"
+      veil.classList.add("is-gone");
+      setTimeout(() => veil.remove(), 2200);
+    }, 3600);
+
+    $("#open-surprise")?.addEventListener("click", startStory);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();

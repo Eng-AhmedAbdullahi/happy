@@ -25,23 +25,24 @@ window.CONFIG = {
   giftMessage: "You are my favorite surprise in this world.",
   giftPhoto: "WhatsApp Image 2026-09-19 at 14.20.06.jpeg",
 
-  photosTitle: "You, in soft light",
+  photosTitle: "A Few Soft Moments 📸",
+  photosSub: "Each one holds a piece of us.",
   photos: [
     {
       src: "WhatsApp Image 2026-09-19 at 14.20.06.jpeg",
-      caption: "You, lighting up everything",
+      caption: "You, lighting up everything ✨",
     },
     {
       src: "WhatsApp Image 2026-09-19 at 14.20.07.jpeg",
-      caption: "A smile I never get tired of",
+      caption: "A smile I never get tired of ❤️",
     },
     {
       src: "WhatsApp Image 2026-09-19 at 14.20.07 (1).jpeg",
-      caption: "My favorite view",
+      caption: "My favorite view 🌙",
     },
   ],
 
-  memoriesTitle: "Moments I keep close",
+  memoriesTitle: "A Few Beautiful Moments ❤️",
   memories: [
     {
       src: "WhatsApp Image 2026-09-19 at 14.20.06.jpeg",
