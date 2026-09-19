@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1c1218" />
+  <title>For You ❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="world" aria-hidden="true">
+    <div class="world__glow world__glow--a"></div>
+    <div class="world__glow world__glow--b"></div>
+    <div class="world__dust" id="dust"></div>
+  </div>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- WELCOME -->
+  <section id="welcome" class="screen screen--welcome">
+    <div class="soft-card">
+      <p class="whisper fade" style="--d:0.8s">shh… this is only for you</p>
+      <h1 class="headline fade" style="--d:1.8s">
+        I made something<br /><span>for your heart</span>
+      </h1>
+      <p class="soft-text fade" style="--d:2.8s">Whenever you’re ready, open it slowly.</p>
+      <button id="open-surprise" class="heart-btn fade" style="--d:3.8s" type="button">
+        Open with love 🤍
+      </button>
+    </div>
+  </section>
+
+  <main id="story" hidden>
+    <section id="special-day" class="screen">
+      <p class="date-breath reveal" id="special-day-text"></p>
+    </section>
+
+    <section id="birthday-hero" class="screen screen--birthday">
+      <p class="whisper reveal">today belongs to you</p>
+      <h2 class="big-love reveal" id="birthday-heading"></h2>
+      <div class="song-slides reveal" id="song-slides">
+        <div class="song-slides__stage" id="song-slides-stage"></div>
+        <p class="song-slides__cap" id="song-slides-cap"></p>
+      </div>
+      <div class="pulse-hearts" aria-hidden="true">
+        <i></i><i></i><i></i>
+      </div>
+    </section>
+
+    <section id="message" class="screen">
+      <div class="love-letter reveal">
+        <p id="typewriter" class="typewriter" aria-live="polite"></p>
+      </div>
+      <button id="continue-to-gift" class="text-btn reveal" type="button" hidden>
+        There’s one more thing… →
+      </button>
+    </section>
+
+    <section id="gift-section" class="screen" hidden>
+      <p class="mid-line reveal" id="gift-intro"></p>
+      <button id="gift-box" class="gift reveal" type="button" aria-label="Open gift">
+        <div class="gift__shine"></div>
+        <div class="gift__lid"><div class="gift__bow"></div></div>
+        <div class="gift__body"><div class="gift__ribbon"></div></div>
+        <div class="gift__inside">
+          <img id="gift-photo" src="" alt="" />
+          <p id="gift-message"></p>
+        </div>
+      </button>
+      <p class="hint reveal" id="gift-hint">Tap gently</p>
+    </section>
+
+    <section id="photos" class="block" hidden>
+      <p class="whisper reveal">look how beautiful you are</p>
+      <h3 class="block-title reveal" id="photos-title"></h3>
+      <div class="tender-gallery" id="photo-gallery"></div>
+    </section>
+
+    <section id="memories" class="block" hidden>
+      <h3 class="block-title reveal" id="memories-title"></h3>
+      <div class="memory-stack" id="memory-grid"></div>
+      <button id="to-finale" class="heart-btn reveal" type="button">
+        Hold this feeling 🤍
+      </button>
+    </section>
+
+    <section id="finale" class="screen screen--finale" hidden>
+      <h2 class="big-love reveal" id="finale-title"></h2>
+      <p class="finale-line reveal" id="finale-sub"></p>
+      <p class="whisper reveal" style="margin-top:1.5rem">always · 19 September</p>
+    </section>
+  </main>
+
+  <div id="lightbox" class="lightbox" hidden>
+    <button class="lightbox__close" type="button" aria-label="Close">×</button>
+    <img id="lightbox-img" src="" alt="" />
+    <p id="lightbox-caption"></p>
+  </div>
+
+  <button id="music-toggle" class="music-toggle" type="button" aria-label="Music" hidden>♪</button>
+
+  <!-- Audio from your WhatsApp video — plays once (no loop) -->
+  <audio id="bg-music" preload="auto">
+    <source src="audio/happy-birthday.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
